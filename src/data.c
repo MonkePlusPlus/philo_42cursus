@@ -6,7 +6,7 @@
 /*   By: ptheo <ptheo@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/09/18 18:30:21 by ptheo             #+#    #+#             */
-/*   Updated: 2024/09/20 19:02:38 by ptheo            ###   ########.fr       */
+/*   Updated: 2024/09/20 21:39:54 by ptheo            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -80,11 +80,11 @@ void    print_data(t_data *data)
 	i = 0;
 	printf("number of philo : %d\ntime to die : %ld\ntime to eat : %ld\n",
 		data->number, data->time_die, data->time_eat);
-	printf("time to sleep : %ld\ntime number : %d\n",
+	printf("time to sleep : %ld\ntime number : %ld\n",
 		data->time_sleep, data->time_number);
 	while (i < data->number)
 	{
-		printf("philo %d : status -> %d time -> %ld\n",
+		printf("philo %d : status -> %d time -> %d\n",
 			data->philo[i].id, data->philo[i].status, 
 			0);
 		i++;

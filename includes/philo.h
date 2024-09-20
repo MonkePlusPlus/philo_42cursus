@@ -6,7 +6,7 @@
 /*   By: ptheo <ptheo@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/09/18 15:57:05 by ptheo             #+#    #+#             */
-/*   Updated: 2024/09/20 19:54:02 by ptheo            ###   ########.fr       */
+/*   Updated: 2024/09/20 21:41:24 by ptheo            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -26,6 +26,7 @@
 # define THINKING 1
 # define EATING 2
 # define DEATH 3
+# define SLEEPING 4
 
 typedef	struct s_philo
 {
@@ -38,6 +39,7 @@ typedef	struct s_philo
 
 typedef struct s_data
 {
+	pthread_t		master;
 	t_philo			*philo;
 	pthread_mutex_t *mutex;
 	size_t			time;
@@ -55,6 +57,10 @@ int		init_data(t_data *data);
 int		full_data(t_data *data, int ac, char **av);
 void	free_data(t_data *data);
 void    print_data(t_data *data);
+
+/* MASTER */
+void	*master_game(void *arg);
+int		philo_death(t_data *data);
 
 /* PHILO */
 t_philo	*init_philo(t_data *data, int number);

@@ -6,7 +6,7 @@
 /*   By: ptheo <ptheo@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/09/18 15:56:32 by ptheo             #+#    #+#             */
-/*   Updated: 2024/09/20 19:00:38 by ptheo            ###   ########.fr       */
+/*   Updated: 2024/09/20 21:51:43 by ptheo            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -25,17 +25,9 @@ int	main(int ac, char **av)
 			return (free_data(&data), -1);
 		data.time = get_current_time();
 		printf("time : %ld\n", data.time);
-		while (i < ac - 1)
-		{
-			pthread_create(&data.philo[i].thread, NULL, philo_journey, &data.philo[i]);
-			i++;
-		}
-		i = 0;
-		while (i < ac - 1)
-		{
-			pthread_join(data.philo[i].thread, NULL);
-			i++;
-		}
+		pthread_create(&data.master, NULL, &master_game, &data);
+		pthread_join(data.master, NULL);
+		free_data(&data);
 	}
 	else
 		return (ft_perror("Error number argument"), -1);
