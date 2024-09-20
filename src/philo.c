@@ -6,7 +6,7 @@
 /*   By: ptheo <ptheo@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/09/18 18:10:20 by ptheo             #+#    #+#             */
-/*   Updated: 2024/09/19 00:18:35 by ptheo            ###   ########.fr       */
+/*   Updated: 2024/09/20 19:02:02 by ptheo            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,53 +14,45 @@
 
 void	*philo_journey(void *p)
 {
-	struct timeval	time;
+	size_t	time;
 	t_philo			*philo;
 	int				right;
 
 	philo = (t_philo *)p;
-	if (philo->id == philo->data->number)
+	if (philo->id == philo->data->number - 1)
 		right = 0;
 	else
 		right = philo->id + 1;
-	while (philo->data->end != 1)
+	while (philo->data->end == 0)
 	{
-		if (philo->fork && philo->data->philo[right].fork && philo->data->end != 1)
+		pthread_mutex_lock(&philo->data->mutex[philo->id]);
+		pthread_mutex_lock(&philo->data->mutex[right]);
+		time = get_current_time();
+		printf("%ld : %d has taken a fork\n", time - philo->data->time, philo->id + 1);
+		time = get_current_time();
+		printf("%ld : %d is eating\n", time - philo->data->time, philo->id + 1);
+		usleep(philo->data->time_eat);
+		philo->status = EATING;
+		pthread_mutex_unlock(&philo->data->mutex[philo->id]);
+		pthread_mutex_unlock(&philo->data->mutex[right]);
+		if (philo->status == EATING)
 		{
-			philo->fork = 0;
-			philo->data->philo[right].fork = 0;
-			gettimeofday(&time, NULL);
-			if (philo->data->end != 1)
-				printf("%ld %d has taken a fork\n", time.tv_usec - philo->data->time.tv_usec, philo->id + 1);
-			gettimeofday(&time, NULL);
-			if (philo->data->end != 1)
-				printf("%ld %d is eating\n", time.tv_usec - philo->data->time.tv_usec, philo->id + 1);
-			usleep(philo->data->time_eat);
-			philo->data->philo[right].fork = 1;
-			philo->fork = 1;
-			gettimeofday(&time, NULL);
-			if (philo->data->end != 1)
-				printf("%ld %d is sleeping\n", time.tv_usec - philo->data->time.tv_usec, philo->id + 1);
+			time = get_current_time();
+			printf("%ld : %d is sleeping\n", time - philo->data->time, philo->id + 1);
 			usleep(philo->data->time_sleep);
 			philo->status = 0;
 		}
-		else if (philo->status != THINKING && philo->data->end != 1)
+		else if (philo->status == 0)
 		{
-			gettimeofday(&philo->time_think, NULL);
-			if (philo->data->end != 1)
-				printf("%ld %d is thinking\n", philo->time_think.tv_usec - philo->data->time.tv_usec, philo->id + 1);
-			philo->status = THINKING;
+			philo->time_think = get_current_time();
+			printf("%ld : %d is thinking\n", philo->time_think - philo->data->time, philo->id + 1);
 		}
-		else if (philo->data->end != 1)
+		time = get_current_time();
+		if (time - philo->time_think > philo->data->time_die)
 		{
-			gettimeofday(&time, NULL);
-			if (time.tv_usec - philo->time_think.tv_usec > philo->data->time_die)
-			{
-				if (philo->data->end != 1)
-					printf("%ld %d died\n", time.tv_usec - philo->data->time.tv_usec, philo->id + 1);
-				philo->data->end = 1;
-				return (NULL);
-			}
+			printf("%ld : %d died\n", time - philo->data->time, philo->id + 1);
+			pthread_mutex_lock(&philo->data->mutex[philo->data->number]);
+			philo->data->end = 1;
 		}
 	}
 	return (NULL);
@@ -78,9 +70,10 @@ t_philo	*init_philo(t_data *data, int number)
 	while (i < number)
 	{
 		philo[i].id = i;
-		philo[i].fork = 1;
 		philo[i].status = 0;
 		philo[i].data = data;
+		if (pthread_mutex_init(&data->mutex[i], NULL) != 0)
+			return (NULL);
 		i++;
 	}
 	return (philo);

@@ -6,7 +6,7 @@
 /*   By: ptheo <ptheo@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/09/18 15:57:05 by ptheo             #+#    #+#             */
-/*   Updated: 2024/09/18 21:46:17 by ptheo            ###   ########.fr       */
+/*   Updated: 2024/09/20 19:54:02 by ptheo            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,6 +19,7 @@
 # include <stdio.h>
 # include <stdarg.h>
 # include <stdint.h>
+# include <string.h>
 # include <pthread.h>
 # include <sys/time.h>
 
@@ -30,23 +31,23 @@ typedef	struct s_philo
 {
 	pthread_t		thread;
 	struct s_data	*data;
-	struct timeval	time_think;
+	size_t			time_think;
 	int				id;
 	int				status;
-	int				fork;
 }				t_philo;
 
 typedef struct s_data
 {
 	t_philo			*philo;
-	pthread_mutex_t mutex;
-	struct timeval	time;
+	pthread_mutex_t *mutex;
+	size_t			time;
+	size_t			time_die;
+	size_t			time_eat;
+	size_t			time_sleep;
+	size_t			time_number;
 	int				end;
 	int				number;
-	int				time_die;
-	int				time_eat;
-	int				time_sleep;
-	int				time_number;
+
 }				t_data;
 
 /* DATA */
@@ -62,5 +63,7 @@ void	*philo_journey(void *arg);
 /* UTILS */
 int		ft_atoi(const char *nptr);
 void	ft_perror(char *str);
+int		ft_usleep(size_t milliseconds);
+size_t	get_current_time(void);
 
 #endif
