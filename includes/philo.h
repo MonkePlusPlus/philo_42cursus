@@ -6,7 +6,7 @@
 /*   By: ptheo <ptheo@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/09/18 15:57:05 by ptheo             #+#    #+#             */
-/*   Updated: 2024/09/22 18:50:11 by ptheo            ###   ########.fr       */
+/*   Updated: 2024/09/25 15:36:45 by ptheo            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -43,6 +43,7 @@ typedef struct s_data
 	pthread_t		master;
 	t_philo			*philo;
 	pthread_mutex_t	*mutex;
+	pthread_mutex_t	*eat_all;
 	size_t			time;
 	size_t			time_die;
 	size_t			time_eat;

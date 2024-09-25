@@ -6,7 +6,7 @@
 /*   By: ptheo <ptheo@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/09/18 15:56:32 by ptheo             #+#    #+#             */
-/*   Updated: 2024/09/22 18:48:00 by ptheo            ###   ########.fr       */
+/*   Updated: 2024/09/25 15:35:09 by ptheo            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -29,6 +29,10 @@ t_philo	*init_philo(t_data *data, int number)
 		philo[i].time_think = get_current_time();
 		philo[i].eat = 0;
 		if (pthread_mutex_init(&data->mutex[i], NULL) != 0)
+			return (NULL);
+		if (pthread_mutex_init(&data->mutex[i + data->number], NULL) != 0)
+			return (NULL);
+		if (pthread_mutex_init(&data->eat_all[i], NULL) != 0)
 			return (NULL);
 		i++;
 	}

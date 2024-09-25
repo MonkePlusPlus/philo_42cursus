@@ -6,7 +6,7 @@
 /*   By: ptheo <ptheo@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/09/18 18:30:21 by ptheo             #+#    #+#             */
-/*   Updated: 2024/09/22 18:46:28 by ptheo            ###   ########.fr       */
+/*   Updated: 2024/09/25 17:15:22 by ptheo            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,6 +17,7 @@ int	init_data(t_data *data)
 	data->number = 0;
 	data->philo = NULL;
 	data->mutex = NULL;
+	data->eat_all = NULL;
 	data->end = 0;
 	data->time_die = 0;
 	data->time_eat = 0;
@@ -41,13 +42,11 @@ int	full_data(t_data *data, int ac, char **av)
 		|| data->number_eat == -1 || data->time_sleep == -1)
 		return (ft_perror("Error argument"), -1);
 	data->mutex = (pthread_mutex_t *)malloc(sizeof(pthread_mutex_t)
-			* (data->number + 1));
-	if (data->mutex == NULL)
-		return (-1);
+			* (data->number * 2));
+	data->eat_all = (pthread_mutex_t *)malloc(sizeof(pthread_mutex_t)
+			* (data->number));
 	data->philo = init_philo(data, data->number);
-	if (data->philo == NULL)
-		return (-1);
-	if (pthread_mutex_init(&data->mutex[data->number], NULL) != 0)
+	if (data->mutex == NULL || data->philo == NULL || data->eat_all == NULL)
 		return (-1);
 	return (0);
 }
@@ -57,15 +56,21 @@ void	free_data(t_data *data)
 	int	i;
 
 	i = 0;
-	if (data->mutex != NULL)
+	while (data->mutex != NULL && i < (data->number * 2))
 	{
-		while (i < data->number + 1)
-		{
-			pthread_mutex_destroy(&data->mutex[i]);
-			i++;
-		}
-		free(data->mutex);
+		pthread_mutex_unlock(&data->mutex[i]);
+		pthread_mutex_destroy(&data->mutex[i]);
+		i++;
 	}
+	free(data->mutex);
+	i = 0;
+	while (data->eat_all != NULL && i < data->number)
+	{
+		pthread_mutex_unlock(&data->eat_all[i]);
+		pthread_mutex_destroy(&data->eat_all[i]);
+		i++;
+	}
+	free(data->eat_all);
 	i = 0;
 	if (data->philo != NULL)
 		free(data->philo);
