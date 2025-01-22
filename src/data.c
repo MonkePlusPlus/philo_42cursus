@@ -3,51 +3,66 @@
 /*                                                        :::      ::::::::   */
 /*   data.c                                             :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: ptheo <ptheo@student.42.fr>                +#+  +:+       +#+        */
+/*   By: theo <theo@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/09/18 18:30:21 by ptheo             #+#    #+#             */
-/*   Updated: 2024/09/25 17:15:22 by ptheo            ###   ########.fr       */
+/*   Updated: 2025/01/22 04:03:40 by theo             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../includes/philo.h"
 
-int	init_data(t_data *data)
+int	init_data(t_data *data, int ac, char **av)
 {
-	data->number = 0;
-	data->philo = NULL;
-	data->mutex = NULL;
-	data->eat_all = NULL;
-	data->end = 0;
-	data->time_die = 0;
-	data->time_eat = 0;
-	data->number_eat = 0;
-	data->limit = 0;
-	data->time_sleep = 0;
+	data->number_philo = ft_atoi(av[1]);
+	data->time_to_die = ft_atoi(av[2]);
+	data->time_to_eat = ft_atoi(av[3]);
+	data->time_to_sleep = ft_atoi(av[4]);
+	data->number_of_time = -1;
+	if (ac == 6)
+		data->number_of_time = ft_atoi(av[5]);
+	if (data->number_philo == 0 || data->time_to_die == 0
+		|| data->time_to_eat == 0 || data->time_to_sleep == 0
+		|| data->number_of_time == 0)
+		return (-1);
+	if (init_philo(data) == -1)
+		return (-1);
 	return (0);
 }
 
-int	full_data(t_data *data, int ac, char **av)
+int	init_philo(t_data *data)
 {
-	data->number = ft_atoi(av[1]);
-	data->time_die = ft_atoi(av[2]);
-	data->time_eat = ft_atoi(av[3]);
-	data->time_sleep = ft_atoi(av[4]);
-	if (ac == 6)
-	{
-		data->number_eat = ft_atoi(av[5]);
-		data->limit = 1;
-	}
-	if (data->number == -1 || data->time_die == -1 || data->time_eat == -1
-		|| data->number_eat == -1 || data->time_sleep == -1)
-		return (ft_perror("Error argument"), -1);
-	data->mutex = (pthread_mutex_t *)malloc(sizeof(pthread_mutex_t)
-			* (data->number * 2));
-	data->eat_all = (pthread_mutex_t *)malloc(sizeof(pthread_mutex_t)
-			* (data->number));
-	data->philo = init_philo(data, data->number);
-	if (data->mutex == NULL || data->philo == NULL || data->eat_all == NULL)
+	size_t	time;
+	int		i;
+
+	time = get_current_time();
+	data->philo = malloc(sizeof(t_philo) * data->number_philo);
+	data->mutex = malloc(sizeof(t_philo) * data->number_philo);
+	if (data->philo == NULL || data->mutex == NULL)
 		return (-1);
+	i = 0;
+	while (i < data->number_philo)
+	{
+		if (pthread_mutex_init(&data->mutex[i], NULL) != 0)
+			return (-1);
+		i++;
+	}
+	i = 0;
+	while (i < data->number_philo)
+	{
+		data->philo[i].id = i;
+		data->philo[i].start_time = time;
+		data->philo[i].time_think = -1;
+		data->philo[i].finish = 0;
+		data->philo[i].right = &data->mutex[i];
+		if (i != 0)
+			data->philo[i].left = &data->mutex[i - 1];
+		if (pthread_mutex_init(&data->philo[i].var, NULL) != 0)
+				return (-1);
+		data->philo[i].data = data;
+		i++;
+	}
+	data->philo[0].left = &data->mutex[data->number_philo - 1];
 	return (0);
 }
 
@@ -55,40 +70,26 @@ void	free_data(t_data *data)
 {
 	int	i;
 
-	i = 0;
-	while (data->mutex != NULL && i < (data->number * 2))
-	{
-		pthread_mutex_unlock(&data->mutex[i]);
-		pthread_mutex_destroy(&data->mutex[i]);
-		i++;
-	}
-	free(data->mutex);
-	i = 0;
-	while (data->eat_all != NULL && i < data->number)
-	{
-		pthread_mutex_unlock(&data->eat_all[i]);
-		pthread_mutex_destroy(&data->eat_all[i]);
-		i++;
-	}
-	free(data->eat_all);
-	i = 0;
 	if (data->philo != NULL)
-		free(data->philo);
-}
-
-void	print_data(t_data *data)
-{
-	int	i;
-
-	i = 0;
-	printf("number of philo : %d\ntime to die : %ld\ntime to eat : %ld\n",
-		data->number, data->time_die, data->time_eat);
-	printf("time to sleep : %ld\nnumber_eat : %ld\n",
-		data->time_sleep, data->number_eat);
-	while (i < data->number)
 	{
-		printf("philo %d : status -> %d time -> %d\n", data->philo[i].id,
-			data->philo[i].status, 0);
-		i++;
+		i = 0;
+		while (i < data->number_philo)
+		{
+			i++;
+		}
+		free(data->philo);
 	}
+	if (data->mutex != NULL)
+	{
+		i = 0;
+		while (i < data->number_philo)
+		{
+			pthread_mutex_unlock(&data->mutex[i]);
+			pthread_cancel(data->philo[i].thread);
+			pthread_mutex_destroy(&data->mutex[i]);
+			i++;
+		}
+		free(data->mutex);
+	}
+	return ;
 }

@@ -3,38 +3,29 @@
 /*                                                        :::      ::::::::   */
 /*   master.c                                           :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: ptheo <ptheo@student.42.fr>                +#+  +:+       +#+        */
+/*   By: theo <theo@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/09/20 21:31:32 by ptheo             #+#    #+#             */
-/*   Updated: 2024/09/25 16:06:32 by ptheo            ###   ########.fr       */
+/*   Updated: 2025/01/22 04:37:22 by theo             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../includes/philo.h"
 
-int	philo_death(t_data *data)
+int	check_death(t_data *data)
 {
-	size_t	time;
 	int		i;
-	int		p;
+	size_t	time;
 
 	i = 0;
-	p = 0;
-	time = get_current_time();
-	while (i < data->number)
+	while (i < data->number_philo)
 	{
-		if (data->philo[i].status == THINKING
-			&& (time - data->philo[i].time_think) >= data->time_die)
+		pthread_mutex_lock(&data->philo[i].var);
+		time = data->philo[i].time_think;
+		pthread_mutex_unlock(&data->philo[i].var);
+		if (get_current_time() - time >= data->time_to_die && time != -1)
 		{
-			p = i;
-			i = data->number;
-			while (i < data->number * 2)
-			{
-				pthread_mutex_unlock(&data->mutex[i]);
-				pthread_mutex_lock(&data->mutex[i]);
-				i++;
-			}
-			printf("%ld %d died\n", time - data->time, p + 1);
+			printf("%ld %d died\n", get_current_time() - data->philo[i].start_time, i);
 			return (1);
 		}
 		i++;
@@ -42,68 +33,45 @@ int	philo_death(t_data *data)
 	return (0);
 }
 
-int	philo_alleat(t_data *data)
+int	check_nb_eat(t_data *data)
 {
 	int		i;
+	int		check;
 
 	i = 0;
-	if (data->limit == 0)
-		return (0);
-	while (i < data->number)
+	while (i < data->number_philo)
 	{
-		if (data->philo[i].eat < data->number_eat)
+		pthread_mutex_lock(&data->philo[i].var);
+		check = data->philo[i].finish;
+		pthread_mutex_unlock(&data->philo[i].var);
+		if (!check)
 			return (0);
 		i++;
 	}
 	return (1);
 }
 
-void	end_game(t_data *data)
+void	*master_thread(void *d)
 {
-	int	i;
-
-/*
-	i = data->number;
-	while (i < data->number * 2)
-	{
-		pthread_mutex_lock(&data->mutex[i]);
-		i++;
-	}*/
-	i = 0;
-	while (i < data->number * 2)
-	{
-		if (i < data->number)
-			pthread_mutex_unlock(&data->eat_all[i]);
-		pthread_mutex_unlock(&data->mutex[i]);
-		i++;
-	}
-	i = 0;
-	while (i < data->number)
-	{
-		pthread_join(data->philo[i].thread, NULL);
-		i++;
-	}
-}
-
-void	*master_game(void *arg)
-{
-	t_data	*data;
+	int		end;
 	int		i;
+	t_data	*data;
 
-	i = 0;
-	data = (t_data *)arg;
-	while (i < data->number)
+	end = 1;
+	data = (t_data *)d;
+	while (end)
 	{
-		pthread_mutex_lock(&data->eat_all[i]);
-		pthread_create(&data->philo[i].thread, NULL, &philo_journey,
-			&data->philo[i]);
-		i++;
+		if (check_death(data) || check_nb_eat(data))
+		{
+			i = 0;
+			while (i < data->number_philo)
+			{
+				data->philo[i].is_alive = 0;
+				i++;
+			}
+			free_data(data);
+			end = 0;
+		}
 	}
-	while (data->end == 0)
-	{
-		if (philo_death(data) || philo_alleat(data))
-			data->end = 1;
-	}
-	end_game(data);
 	return (NULL);
 }

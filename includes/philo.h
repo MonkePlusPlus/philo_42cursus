@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   philo.h                                            :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: ptheo <ptheo@student.42.fr>                +#+  +:+       +#+        */
+/*   By: theo <theo@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/09/18 15:57:05 by ptheo             #+#    #+#             */
-/*   Updated: 2024/09/25 15:36:45 by ptheo            ###   ########.fr       */
+/*   Updated: 2025/01/22 03:38:02 by theo             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -30,48 +30,43 @@
 
 typedef struct s_philo
 {
-	pthread_t		thread;
+	int				id;
+	int				is_alive;
+	int				finish;
 	struct s_data	*data;
 	size_t			time_think;
-	int				id;
-	int				status;
-	int				eat;
+	size_t			start_time;
+	pthread_t		thread;
+	pthread_mutex_t	*left;
+	pthread_mutex_t	*right;
+	pthread_mutex_t	var;
 }				t_philo;
 
 typedef struct s_data
 {
-	pthread_t		master;
 	t_philo			*philo;
+	pthread_t		master;
 	pthread_mutex_t	*mutex;
-	pthread_mutex_t	*eat_all;
-	size_t			time;
-	size_t			time_die;
-	size_t			time_eat;
-	size_t			time_sleep;
-	size_t			number_eat;
-	int				end;
-	int				limit;
-	int				number;
+	int 			number_philo;
+	int				time_to_die;
+	int				time_to_eat;
+	int				time_to_sleep;
+	int				number_of_time;
 }				t_data;
 
 /* DATA */
-int		init_data(t_data *data);
-int		full_data(t_data *data, int ac, char **av);
+int		init_data(t_data *data, int ac, char **av);
+int		init_philo(t_data *data);
 void	free_data(t_data *data);
-void	print_data(t_data *data);
 
 /* MASTER */
-void	*master_game(void *arg);
-int		philo_death(t_data *data);
-int		philo_alleat(t_data *data);
+int		check_death(t_data *data);
+void	*master_thread(void *d);
 
 /* PHILO */
-t_philo	*init_philo(t_data *data, int number);
-void	*philo_journey(void *arg);
-void	is_eating_utils(t_philo *philo, int right);
-void	is_eating(t_philo *philo);
-void	is_sleeping(t_philo *philo);
-void	is_thinking(t_philo *philo);
+void	philo_eating(t_philo *philo);
+void	philo_sleeping(t_philo *philo);
+void	*philo_thread(void *p);
 
 /* UTILS */
 int		ft_atoi(const char *nptr);
