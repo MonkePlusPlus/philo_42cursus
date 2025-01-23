@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   data.c                                             :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: theo <theo@student.42.fr>                  +#+  +:+       +#+        */
+/*   By: ptheo <ptheo@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/09/18 18:30:21 by ptheo             #+#    #+#             */
-/*   Updated: 2025/01/22 04:03:40 by theo             ###   ########.fr       */
+/*   Updated: 2025/01/23 17:17:39 by ptheo            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -66,30 +66,35 @@ int	init_philo(t_data *data)
 	return (0);
 }
 
+void	stop_thread(t_data *data)
+{
+	int	i;
+
+	i = 0;
+	while (i < data->number_philo)
+	{
+		pthread_mutex_unlock(&data->mutex[i]);
+		pthread_mutex_unlock(&data->philo[i].var);
+		pthread_mutex_destroy(&data->mutex[i]);
+		pthread_mutex_destroy(&data->philo[i].var);
+		i++;
+	}
+	i = 0;
+	while (i < data->number_philo)
+	{
+		pthread_cancel(data->philo[i].thread);
+		i++;
+	}
+	pthread_cancel(data->master);
+}
+
 void	free_data(t_data *data)
 {
 	int	i;
 
-	if (data->philo != NULL)
-	{
-		i = 0;
-		while (i < data->number_philo)
-		{
-			i++;
-		}
-		free(data->philo);
-	}
 	if (data->mutex != NULL)
-	{
-		i = 0;
-		while (i < data->number_philo)
-		{
-			pthread_mutex_unlock(&data->mutex[i]);
-			pthread_cancel(data->philo[i].thread);
-			pthread_mutex_destroy(&data->mutex[i]);
-			i++;
-		}
 		free(data->mutex);
-	}
+	if (data->philo != NULL)
+		free(data->philo);
 	return ;
 }

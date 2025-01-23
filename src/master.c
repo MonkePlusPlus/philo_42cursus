@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   master.c                                           :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: theo <theo@student.42.fr>                  +#+  +:+       +#+        */
+/*   By: ptheo <ptheo@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/09/20 21:31:32 by ptheo             #+#    #+#             */
-/*   Updated: 2025/01/22 04:37:22 by theo             ###   ########.fr       */
+/*   Updated: 2025/01/23 17:57:35 by ptheo            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,12 +22,13 @@ int	check_death(t_data *data)
 	{
 		pthread_mutex_lock(&data->philo[i].var);
 		time = data->philo[i].time_think;
-		pthread_mutex_unlock(&data->philo[i].var);
 		if (get_current_time() - time >= data->time_to_die && time != -1)
 		{
 			printf("%ld %d died\n", get_current_time() - data->philo[i].start_time, i);
+			pthread_mutex_unlock(&data->philo[i].var);
 			return (1);
 		}
+		pthread_mutex_unlock(&data->philo[i].var);
 		i++;
 	}
 	return (0);
@@ -66,11 +67,14 @@ void	*master_thread(void *d)
 			i = 0;
 			while (i < data->number_philo)
 			{
+				pthread_mutex_lock(&data->philo[i].var);
 				data->philo[i].is_alive = 0;
+				pthread_mutex_unlock(&data->philo[i].var);
 				i++;
 			}
-			free_data(data);
+			stop_thread(data);
 			end = 0;
+			return (NULL);
 		}
 	}
 	return (NULL);

@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   main.c                                             :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: theo <theo@student.42.fr>                  +#+  +:+       +#+        */
+/*   By: ptheo <ptheo@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/09/18 15:56:32 by ptheo             #+#    #+#             */
-/*   Updated: 2025/01/22 03:44:18 by theo             ###   ########.fr       */
+/*   Updated: 2025/01/23 17:09:15 by ptheo            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -44,6 +44,7 @@ int	main(int ac, char **av)
 		if (init_data(&data, ac, av) == -1)
 			return (free_data(&data), -1);
 		start_philo(&data);
+		free_data(&data);
 	}
 	else
 		return (ft_perror("Error number argument"), -1);
