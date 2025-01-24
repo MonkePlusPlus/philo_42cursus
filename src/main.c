@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   main.c                                             :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: ptheo <ptheo@student.42.fr>                +#+  +:+       +#+        */
+/*   By: theo <theo@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/09/18 15:56:32 by ptheo             #+#    #+#             */
-/*   Updated: 2025/01/23 17:09:15 by ptheo            ###   ########.fr       */
+/*   Updated: 2025/01/24 01:12:43 by theo             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,28 +17,27 @@ int	start_philo(t_data *data)
 	int	i;
 
 	i = 0;
-	pthread_create(&data->master, NULL, &master_thread, data);
 	while (i < data->number_philo)
 	{
-		pthread_create(&data->philo[i].thread, NULL, &philo_thread, &data->philo[i]);
+		pthread_create(&data->philo[i].thread, NULL, &philo_thread,
+			&data->philo[i]);
 		i++;
 	}
-	pthread_join(data->master, NULL);
 	i = 0;
+	master_thread(data);
 	while (i < data->number_philo)
 	{
 		pthread_join(data->philo[i].thread, NULL);
 		i++;
 	}
+	stop_thread(data);
 	return (1);
 }
 
 int	main(int ac, char **av)
 {
 	t_data	data;
-	int		i;
 
-	i = 0;
 	if (ac == 5 || ac == 6)
 	{
 		if (init_data(&data, ac, av) == -1)

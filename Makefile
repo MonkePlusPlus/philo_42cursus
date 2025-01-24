@@ -3,10 +3,10 @@
 #                                                         :::      ::::::::    #
 #    Makefile                                           :+:      :+:    :+:    #
 #                                                     +:+ +:+         +:+      #
-#    By: ptheo <ptheo@student.42.fr>                +#+  +:+       +#+         #
+#    By: theo <theo@student.42.fr>                  +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2024/09/18 15:55:46 by ptheo             #+#    #+#              #
-#    Updated: 2024/09/20 21:41:35 by ptheo            ###   ########.fr        #
+#    Updated: 2025/01/24 01:27:51 by theo             ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -38,7 +38,7 @@ all : $(NAME)
 
 $(NAME) : $(OBJ)
 		@echo "${GREEN}COMPILATION OF PHILO FILE :${WHITE}"
-		$(CC) $(FLAGS) $(OBJ) -o $(NAME) -I$(INCLUDES) $(PTHREAD_FLAGS)
+		$(CC) -o $@ $^ $(CFLAGS) -I$(INCLUDES) $(PTHREAD_FLAGS)
 
 clean :
 	$(RM) $(OBJ)

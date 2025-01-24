@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   utils.c                                            :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: ptheo <ptheo@student.42.fr>                +#+  +:+       +#+        */
+/*   By: theo <theo@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/09/18 18:14:19 by ptheo             #+#    #+#             */
-/*   Updated: 2025/01/23 17:46:17 by ptheo            ###   ########.fr       */
+/*   Updated: 2025/01/24 01:12:32 by theo             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -53,11 +53,19 @@ int	ft_usleep(size_t milliseconds)
 
 	start = get_current_time();
 	while ((get_current_time() - start) < milliseconds)
-		usleep(500);
+		usleep(10);
 	return (0);
 }
 
-size_t	get_current_time(void)
+void	message_philo(t_philo *philo, char *text)
+{
+	pthread_mutex_lock(philo->text);
+	printf("%ld %d %s\n", get_current_time() - philo->start_time,
+		philo->id, text);
+	pthread_mutex_unlock(philo->text);
+}
+
+long int	get_current_time(void)
 {
 	struct timeval	time;
 

@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   master.c                                           :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: ptheo <ptheo@student.42.fr>                +#+  +:+       +#+        */
+/*   By: theo <theo@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/09/20 21:31:32 by ptheo             #+#    #+#             */
-/*   Updated: 2025/01/23 17:57:35 by ptheo            ###   ########.fr       */
+/*   Updated: 2025/01/24 01:06:28 by theo             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,17 +14,18 @@
 
 int	check_death(t_data *data)
 {
-	int		i;
-	size_t	time;
+	int			i;
+	long int	time;
 
 	i = 0;
+	time = 0;
 	while (i < data->number_philo)
 	{
 		pthread_mutex_lock(&data->philo[i].var);
 		time = data->philo[i].time_think;
 		if (get_current_time() - time >= data->time_to_die && time != -1)
 		{
-			printf("%ld %d died\n", get_current_time() - data->philo[i].start_time, i);
+			message_philo(&data->philo[i], "died");
 			pthread_mutex_unlock(&data->philo[i].var);
 			return (1);
 		}
@@ -40,6 +41,7 @@ int	check_nb_eat(t_data *data)
 	int		check;
 
 	i = 0;
+	check = 0;
 	while (i < data->number_philo)
 	{
 		pthread_mutex_lock(&data->philo[i].var);
@@ -52,15 +54,13 @@ int	check_nb_eat(t_data *data)
 	return (1);
 }
 
-void	*master_thread(void *d)
+void	master_thread(t_data *data)
 {
 	int		end;
 	int		i;
-	t_data	*data;
 
 	end = 1;
-	data = (t_data *)d;
-	while (end)
+	while (end != 0)
 	{
 		if (check_death(data) || check_nb_eat(data))
 		{
@@ -72,10 +72,8 @@ void	*master_thread(void *d)
 				pthread_mutex_unlock(&data->philo[i].var);
 				i++;
 			}
-			stop_thread(data);
 			end = 0;
-			return (NULL);
+			return ;
 		}
 	}
-	return (NULL);
 }
