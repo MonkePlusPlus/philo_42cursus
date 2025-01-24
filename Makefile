@@ -6,7 +6,7 @@
 #    By: ptheo <ptheo@student.42.fr>                +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2024/09/18 15:55:46 by ptheo             #+#    #+#              #
-#    Updated: 2025/01/24 11:33:43 by ptheo            ###   ########.fr        #
+#    Updated: 2025/01/24 19:58:34 by ptheo            ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -20,6 +20,7 @@ FILE	+= data.c
 FILE	+= philo.c
 FILE	+= utils.c
 FILE	+= master.c
+FILE	+= launch.c
 # END FILE
 SRC_FILE = $(addprefix $(SRC), $(FILE))
 

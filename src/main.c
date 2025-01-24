@@ -6,33 +6,11 @@
 /*   By: ptheo <ptheo@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/09/18 15:56:32 by ptheo             #+#    #+#             */
-/*   Updated: 2025/01/24 11:28:05 by ptheo            ###   ########.fr       */
+/*   Updated: 2025/01/24 20:05:03 by ptheo            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "philo.h"
-
-int	start_philo(t_data *data)
-{
-	int	i;
-
-	i = 0;
-	while (i < data->number_philo)
-	{
-		pthread_create(&data->philo[i].thread, NULL, &philo_thread,
-			&data->philo[i]);
-		i++;
-	}
-	i = 0;
-	master_thread(data);
-	while (i < data->number_philo)
-	{
-		pthread_join(data->philo[i].thread, NULL);
-		i++;
-	}
-	stop_thread(data);
-	return (1);
-}
 
 int	main(int ac, char **av)
 {
@@ -42,7 +20,12 @@ int	main(int ac, char **av)
 	{
 		if (init_data(&data, ac, av) == -1)
 			return (free_data(&data), -1);
-		start_philo(&data);
+		if (data.number_philo > 1)
+			start_philo(&data);
+		else if (data.number_philo < 1)
+			return (-1);
+		else
+			one_philo(&data);
 		free_data(&data);
 	}
 	else

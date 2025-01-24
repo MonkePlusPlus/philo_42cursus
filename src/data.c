@@ -6,7 +6,7 @@
 /*   By: ptheo <ptheo@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/09/18 18:30:21 by ptheo             #+#    #+#             */
-/*   Updated: 2025/01/24 11:16:24 by ptheo            ###   ########.fr       */
+/*   Updated: 2025/01/24 20:04:20 by ptheo            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,12 +19,16 @@ int	init_data(t_data *data, int ac, char **av)
 	data->time_to_eat = ft_atoi(av[3]);
 	data->time_to_sleep = ft_atoi(av[4]);
 	data->number_of_time = -1;
+	data->mutex = NULL;
+	data->philo = NULL;
 	if (ac == 6)
 		data->number_of_time = ft_atoi(av[5]);
 	if (data->number_philo == 0 || data->time_to_die == 0
 		|| data->time_to_eat == 0 || data->time_to_sleep == 0
 		|| data->number_of_time == 0)
 		return (-1);
+	if (data->number_philo <= 1)
+		return (0);
 	if (init_mutex(data) == -1)
 		return (-1);
 	if (init_philo(data) == -1)

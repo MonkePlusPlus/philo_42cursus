@@ -6,7 +6,7 @@
 /*   By: ptheo <ptheo@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/09/18 15:57:05 by ptheo             #+#    #+#             */
-/*   Updated: 2025/01/24 11:41:26 by ptheo            ###   ########.fr       */
+/*   Updated: 2025/01/24 20:00:58 by ptheo            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -73,6 +73,8 @@ void		philo_eating_utils(t_philo *philo);
 void		philo_sleeping(t_philo *philo);
 void		*philo_thread(void *p);
 void		stop_thread(t_data *data);
+int			start_philo(t_data *data);
+int			one_philo(t_data *data);
 
 /* UTILS */
 int			ft_atoi(const char *nptr);
