@@ -3,14 +3,14 @@
 /*                                                        :::      ::::::::   */
 /*   philo.c                                            :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: theo <theo@student.42.fr>                  +#+  +:+       +#+        */
+/*   By: ptheo <ptheo@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/09/18 18:10:20 by ptheo             #+#    #+#             */
-/*   Updated: 2025/01/24 01:15:51 by theo             ###   ########.fr       */
+/*   Updated: 2025/01/24 11:37:03 by ptheo            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "../includes/philo.h"
+#include "philo.h"
 
 void	philo_eating(t_philo *philo)
 {
@@ -29,7 +29,7 @@ void	philo_eating(t_philo *philo)
 		return ;
 	}
 	pthread_mutex_unlock(&philo->var);
-	message_philo(philo, "has taken a fork");
+	message_philo(philo, "has taken a fork", 1);
 	philo_eating_utils(philo);
 }
 
@@ -47,12 +47,12 @@ void	philo_eating_utils(t_philo *philo)
 		pthread_mutex_unlock(&philo->var);
 		return ;
 	}
-	message_philo(philo, "has taken a fork");
 	pthread_mutex_unlock(&philo->var);
+	message_philo(philo, "has taken a fork", 1);
 	pthread_mutex_lock(&philo->var);
 	philo->time_think = -1;
-	message_philo(philo, "is eating");
 	pthread_mutex_unlock(&philo->var);
+	message_philo(philo, "is eating", 1);
 	ft_usleep(philo->time_to_eat);
 	pthread_mutex_unlock(philo->left);
 	pthread_mutex_unlock(philo->right);
@@ -67,7 +67,7 @@ void	philo_sleeping(t_philo *philo)
 		return ;
 	}
 	pthread_mutex_unlock(&philo->var);
-	message_philo(philo, "is sleeping");
+	message_philo(philo, "is sleeping", 1);
 	ft_usleep(philo->time_to_sleep);
 }
 
@@ -89,7 +89,7 @@ void	*philo_thread(void *p)
 	nb_eat = 0;
 	while (philo_is_alive(philo))
 	{
-		message_philo(philo, "is thinking");
+		message_philo(philo, "is thinking", 1);
 		pthread_mutex_lock(&philo->var);
 		philo->time_think = get_current_time();
 		pthread_mutex_unlock(&philo->var);

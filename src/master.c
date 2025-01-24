@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   master.c                                           :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: theo <theo@student.42.fr>                  +#+  +:+       +#+        */
+/*   By: ptheo <ptheo@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/09/20 21:31:32 by ptheo             #+#    #+#             */
-/*   Updated: 2025/01/24 01:06:28 by theo             ###   ########.fr       */
+/*   Updated: 2025/01/24 11:35:39 by ptheo            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -25,8 +25,8 @@ int	check_death(t_data *data)
 		time = data->philo[i].time_think;
 		if (get_current_time() - time >= data->time_to_die && time != -1)
 		{
-			message_philo(&data->philo[i], "died");
 			pthread_mutex_unlock(&data->philo[i].var);
+			message_philo(&data->philo[i], "died", 0);
 			return (1);
 		}
 		pthread_mutex_unlock(&data->philo[i].var);
