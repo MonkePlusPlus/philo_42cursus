@@ -40,4 +40,5 @@ int	one_philo(t_data *data)
 	printf("0 0 has taken a fork\n");
 	ft_usleep(data->time_to_die);
 	printf("%ld 0 died\n", data->time_to_die);
+	return (0);
 }

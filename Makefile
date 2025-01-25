@@ -38,7 +38,7 @@ WHITE	:= \e[0m
 
 %.o : %.c 
 	@echo "Compiling $<"
-	@$(CC) -c $< -o $@ $(CFLAGS) -I $(INCLUDES) $(PTHREAD_FLAGS)
+	@$(CC) -c $< -o $@ $(CFLAGS) -I $(INCLUDES)
 
 
 
